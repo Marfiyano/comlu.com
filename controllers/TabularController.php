@@ -6,8 +6,8 @@ use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
-use app\models\LoginForm;
-use app\models\ContactForm;
+use yii\data\ActiveDataProvider;
+use app\models\Invoice_Header;
 
 class TabularController extends Controller
 {
@@ -49,9 +49,42 @@ class TabularController extends Controller
 
     public function actionIndex()
     {
-        return $this->render('index');
+		$invoice_header_model = new Invoice_Header();
+		
+		$dataProvider = new ActiveDataProvider([
+			'query' => $invoice_header_model->find(),
+			'pagination' => [
+				'pageSize' => 10
+			],
+		]);
+		
+        return $this->render(
+						'index',
+						[
+							'dataProvider' => $dataProvider
+						]
+					);
     }
 
+	public function actionCreate()
+    {
+		$invoice_header_model = new Invoice_Header();
+		
+		$dataProvider = new ActiveDataProvider([
+			'query' => $invoice_header_model->find(),
+			'pagination' => [
+				'pageSize' => 10
+			],
+		]);
+		
+        return $this->render(
+						'index',
+						[
+							'dataProvider' => $dataProvider
+						]
+					);
+    }
+	
     public function actionLogin()
     {
         if (!Yii::$app->user->isGuest) {

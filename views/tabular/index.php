@@ -1,6 +1,7 @@
 <?php
 
-/* @var $this yii\web\View */
+use yii\grid\GridView;
+
 
 $this->title = 'My Yii Application';
 ?>
@@ -18,16 +19,43 @@ $this->title = 'My Yii Application';
 
         <div class="row">
             <div class="col-lg-12">
-                <h2>Heading</h2>
+                <?= GridView::widget([
+					'dataProvider' => $dataProvider,
+					'columns' => [
+						[
+							'attribute' => 'invoice_number',
+							'headerOptions' => ['class' => 'text-center'],
+							'contentOptions' => ['class' => 'text-center'],	
+						],
+						[
+							'attribute' => 'total',
+							'headerOptions' => ['class' => 'text-center'],
+							'contentOptions' => ['class' => 'text-center'],	
+						],
+						[
+							'attribute' => 'create_date',
+							'headerOptions' => ['class' => 'text-center'],
+							'contentOptions' => ['class' => 'text-center'],	
+						],
+						[
+							'header' => 'Action',
+							'headerOptions' => ['class' => 'text-center'],
+							'contentOptions' => ['class' => 'text-center'],	
+						],
+					],
+				]); ?>
 
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                    fugiat nulla pariatur.</p>
-
-                <p><a class="btn btn-default" href="http://www.yiiframework.com/extensions/">Yii Extensions &raquo;</a></p>
+                <p><a class="btn btn-default" href="./tabular/create">Create Invoice</a></p>
             </div>
         </div>
 
     </div>
 </div>
+
+<?php
+$this->registerJs(
+	'$(document).ready(function(){
+		console.log("Ready");
+	});', 
+	\yii\web\View::POS_READY
+); ?>
