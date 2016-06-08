@@ -14,10 +14,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <h1><?= Html::encode($this->title) ?></h1>
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
-
-    <p>
-        <?= Html::a('Create Order', ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
+	<br />
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
@@ -30,12 +27,16 @@ $this->params['breadcrumbs'][] = $this->title;
 			[
 				'attribute' => 'loading_date',
 				'headerOptions' => ['class' => 'text-center'],
-				'contentOptions' => ['class' => 'text-center'],	
+				'contentOptions' => [
+					'class' => 'text-center col-lg-1 col-md-1 col-sm-1 col-xm-1',
+				],
 			],
 			[
 				'attribute' => 'unload_date',
 				'headerOptions' => ['class' => 'text-center'],
-				'contentOptions' => ['class' => 'text-center'],	
+				'contentOptions' => [
+					'class' => 'text-center col-lg-1 col-md-1 col-sm-1 col-xm-1',
+				],
 			],
 			[
 				'attribute' => 'location',
@@ -45,20 +46,30 @@ $this->params['breadcrumbs'][] = $this->title;
 			[
 				'attribute' => 'price',
 				'headerOptions' => ['class' => 'text-center'],
-				'contentOptions' => ['class' => 'text-center'],	
+				'contentOptions' => [
+					'class' => 'text-center col-lg-2 col-md-1 col-sm-1 col-xm-1',
+				],
 				'format' => 'Currency',
 			],
 			[
 				'attribute' => 'note',
 				'headerOptions' => ['class' => 'text-center'],
-				'contentOptions' => ['class' => 'text-center'],
+				'contentOptions' => [
+					'class' => 'text-center col-lg-2 col-md-1 col-sm-1 col-xm-1',
+				],
 			],
 			[
 				'header' => 'Action',
 				'headerOptions' => ['class' => 'text-center'],
-				'contentOptions' => ['class' => 'text-center'],	
+				'contentOptions' => [
+					'class' => 'text-center col-lg-1 col-md-1 col-sm-1 col-xm-1',
+				],
 				'class' => 'yii\grid\ActionColumn',
 			],
 		],
     ]); ?>
+	
+	<p>
+        <?= Html::a('Create Order', ['create'], ['class' => 'btn btn-success']) ?>
+    </p>
 </div>
