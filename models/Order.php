@@ -36,13 +36,13 @@ class Order extends ActiveRecord
 	/* Invoice Header Model attribute labels */
 	public function attributeLabels() {
 		return [
-			'company_name' => Yii::t('app', 'Nama Perusahaan'),
-			'loading_date' => Yii::t('app', 'Tanggal Loading'),
-			'unload_date' => Yii::t('app', 'Tanggal Unload'),
-			'location' => Yii::t('app', 'Lokasi'),
-			'price' => Yii::t('app', 'Harga'),
-			'note' => Yii::t('app', 'Catatan'),
-			'photo' => Yii::t('app', 'Foto'),
+			'company_name' => Yii::t('app', 'Company Name'),
+			'loading_date' => Yii::t('app', 'Loading Date'),
+			'unload_date' => Yii::t('app', 'Unloading Date'),
+			'location' => Yii::t('app', 'Location'),
+			'price' => Yii::t('app', 'Price'),
+			'note' => Yii::t('app', 'Note'),
+			'photo' => Yii::t('app', 'Photo'),
 		];
 	}
 
