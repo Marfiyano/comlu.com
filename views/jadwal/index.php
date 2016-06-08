@@ -1,79 +1,64 @@
 <?php
 
+use yii\helpers\Html;
 use yii\grid\GridView;
 
+/* @var $this yii\web\View */
+/* @var $searchModel app\models\OrderSearch */
+/* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'My Yii Application';
+$this->title = 'Orders';
+$this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="site-index">
+<div class="order-index">
 
-    <div class="jumbotron">
-        <h1>Order</h1>
+    <h1><?= Html::encode($this->title) ?></h1>
+    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
-        <p class="lead">Daftar Order</p>
-
-        <!--<p><a class="btn btn-lg btn-success" href="http://www.yiiframework.com">Get started with Yii</a></p>-->
-    </div>
-
-    <div class="body-content">
-
-        <div class="row">
-            <div class="col-lg-12">
-                <?= GridView::widget([
-					'dataProvider' => $dataProvider,
-					'columns' => [
-						[
-							'attribute' => 'company_name',
-							'headerOptions' => ['class' => 'text-center'],
-							'contentOptions' => ['class' => 'text-center'],
-						],
-						[
-							'attribute' => 'loading_date',
-							'headerOptions' => ['class' => 'text-center'],
-							'contentOptions' => ['class' => 'text-center'],	
-						],
-						[
-							'attribute' => 'unload_date',
-							'headerOptions' => ['class' => 'text-center'],
-							'contentOptions' => ['class' => 'text-center'],	
-						],
-						[
-							'attribute' => 'location',
-							'headerOptions' => ['class' => 'text-center'],
-							'contentOptions' => ['class' => 'text-center'],	
-						],
-						[
-							'attribute' => 'price',
-							'headerOptions' => ['class' => 'text-center'],
-							'contentOptions' => ['class' => 'text-center'],	
-							'format' => 'Currency',
-						],
-						[
-							'attribute' => 'note',
-							'headerOptions' => ['class' => 'text-center'],
-							'contentOptions' => ['class' => 'text-center'],
-						],
-						[
-							'header' => 'Action',
-							'headerOptions' => ['class' => 'text-center'],
-							'contentOptions' => ['class' => 'text-center'],	
-							'class' => 'yii\grid\ActionColumn',
-						],
-					],
-					'emptyCell' => '-',
-				]); ?>
-
-                <p><a class="btn btn-default" href="./tabular/create">Create Invoice</a></p>
-            </div>
-        </div>
-
-    </div>
+    <p>
+        <?= Html::a('Create Order', ['create'], ['class' => 'btn btn-success']) ?>
+    </p>
+    <?= GridView::widget([
+        'dataProvider' => $dataProvider,
+        'filterModel' => $searchModel,
+		'columns' => [
+			[
+				'attribute' => 'company_name',
+				'headerOptions' => ['class' => 'text-center'],
+				'contentOptions' => ['class' => 'text-center'],
+			],
+			[
+				'attribute' => 'loading_date',
+				'headerOptions' => ['class' => 'text-center'],
+				'contentOptions' => ['class' => 'text-center'],	
+			],
+			[
+				'attribute' => 'unload_date',
+				'headerOptions' => ['class' => 'text-center'],
+				'contentOptions' => ['class' => 'text-center'],	
+			],
+			[
+				'attribute' => 'location',
+				'headerOptions' => ['class' => 'text-center'],
+				'contentOptions' => ['class' => 'text-center'],	
+			],
+			[
+				'attribute' => 'price',
+				'headerOptions' => ['class' => 'text-center'],
+				'contentOptions' => ['class' => 'text-center'],	
+				'format' => 'Currency',
+			],
+			[
+				'attribute' => 'note',
+				'headerOptions' => ['class' => 'text-center'],
+				'contentOptions' => ['class' => 'text-center'],
+			],
+			[
+				'header' => 'Action',
+				'headerOptions' => ['class' => 'text-center'],
+				'contentOptions' => ['class' => 'text-center'],	
+				'class' => 'yii\grid\ActionColumn',
+			],
+		],
+    ]); ?>
 </div>
-
-<?php
-$this->registerJs(
-	'$(document).ready(function(){
-		console.log("Ready");
-	});', 
-	\yii\web\View::POS_READY
-); ?>
