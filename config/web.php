@@ -44,6 +44,14 @@ $config = [
             'rules' => [
             ],
         ],
+		'formatter' => [
+			'class' => 'yii\i18n\Formatter',
+			'dateFormat' => 'dd.MM.yyyy',
+			'decimalSeparator' => ',',
+			'thousandSeparator' => '.',
+			'currencyCode' => 'Rp',
+			'nullDisplay' => '-',          
+		],
     ],
     'params' => $params,
 ];
