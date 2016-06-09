@@ -19,8 +19,10 @@ class Order extends ActiveRecord
     public function rules()
     {
         return [
-            // id_order is required
-            [['id_order'], 'required'],
+            // company_name, loading_date, unload_date, location, price is required
+	    [['company_name','loading_date','unload_date','location','price'], 'required'],
+	    // id_order, note, photo is required
+	    [['id_order','note','photo'], 'safe'],
             // rememberMe must be a boolean value
         ];
     }
