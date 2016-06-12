@@ -15,7 +15,7 @@ use yii\jui\DatePicker;
         'id' => 'create-order-form',
         'options' => ['class' => 'form-horizontal'],
         'fieldConfig' => [
-            'template' => "{label}\n<div class=\"col-lg-6\">{input}</div>\n<div class=\"col-lg-4\">{error}</div>",
+            'template' => "{label}\n<div class=\"col-lg-6\" style=\"padding-top:7px\">{input}</div>\n<div class=\"col-lg-4\">{error}</div>",
             'labelOptions' => ['class' => 'col-lg-2 control-label'],
         ],
     ]); ?>
@@ -37,17 +37,32 @@ use yii\jui\DatePicker;
 							'value' => 'Rp ',
 							'onkeyup' => 'titikribuan(this)',
 							'onkeydown' => 'return numbersonly(this, event)',
-						    ]) ?>
-		<?= $form->field($model, 'tax')->textInput() ?>
+							'onselect' => 'return false',
+							]) ?>
+		<?= $form->field($model, 'tax')->radioList([
+							'0' => 'No tax',
+							'1' => 'With tax',
+							]) ?>
 		<?= $form->field($model, 'note')->textArea() ?>
 		<?= $form->field($model, 'photo')->fileinput([
 							'accept' => 'image/*',	      
 						    ]) ?>
 
 		<div class="controls col-lg-offset-2">
-			<?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+			<?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' =>'btn btn-success']) ?>
+			<?= Html::a('Back' , ['/jadwal'], [
+							'class' => 'btn btn-primary',
+							]) ?>
 		</div>
 
     <?php ActiveForm::end(); ?>
 
 </div>
+
+<?php
+$this->registerJs(
+    '$("document").ready(function(){
+		//console.log("hi");
+	});'
+);
+?>

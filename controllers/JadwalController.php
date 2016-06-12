@@ -54,25 +54,42 @@ class JadwalController extends Controller
         $model = new Order();
 	
         if ($model->load(Yii::$app->request->post())) {
-	    $model->price = str_replace('.','',substr($_POST['Order']['price'],3));
-	    if ($model->save()) {
-		//return $this->redirect(['view', 'id' => $model->id_order]);
-		return $this->redirect(['index']);
-	    } else {
-		echo "<pre>";
-		    echo "<br />";
-		    echo "<br />";
-		    echo "<br />";
-		    echo "<br />";
-			print_r($model->getErrors());
-		    echo "</pre>";
-	    }
+			if (substr($_POST['Order']['price'],3) == 'Rp ')
+				$model->price = str_replace('.','',substr($_POST['Order']['price'],3));
+			else
+				$model->price = str_replace('.','',$_POST['Order']['price']);
+			
+			//get uploaded photo
+			$photo = \yii\web\UploadedFile::getInstance($model, 'photo');
+			
+			if ($photo->size !== 0)
+				$model->photo = $model->company_name. ' -' .$photo->name;
+			else
+				$model->photo = Company::findone($model->c_id)->logo;
+				
+			if ($model->save()) {
+				//save photo
+				if ($photo->size !== 0)
+				$photo->saveAs(\Yii::$app->basePath . '/uploads/' . $photo);
+				
+				//return $this->redirect(['view', 'id' => $model->id_order]);
+				return $this->redirect(['index']);
+			} else {
+				echo "<pre>";
+					echo "<br />";
+					echo "<br />";
+					echo "<br />";
+					echo "<br />";
+					print_r($model->getErrors());
+					echo "</pre>";
+				//}
+			}
+		}
+		return $this->render('create', [
+			'model' => $model,
+		]);
 	}
-	return $this->render('create', [
-	    'model' => $model,
-	]);
-    }
-    
+	
     /**
      * Displays a single Order model.
      * @param integer $id
