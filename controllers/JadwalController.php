@@ -35,11 +35,11 @@ class JadwalController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new OrderSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $model = new Order();
+        $dataProvider = $model->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-            'searchModel' => $searchModel,
+            'model' => $model,
             'dataProvider' => $dataProvider,
         ]);
     }
@@ -62,27 +62,23 @@ class JadwalController extends Controller
 			//get uploaded photo
 			$photo = \yii\web\UploadedFile::getInstance($model, 'photo');
 			
-			if ($photo->size !== 0)
+			if (isset($photo) && $photo->size !== 0)
 				$model->photo = $model->company_name. ' -' .$photo->name;
-			else
-				$model->photo = Company::findone($model->c_id)->logo;
 				
 			if ($model->save()) {
-				//save photo
-				if ($photo->size !== 0)
-				$photo->saveAs(\Yii::$app->basePath . '/uploads/' . $photo);
+				if (isset($photo) && $photo->size !== 0) //save photo
+					$photo->saveAs(\Yii::$app->basePath . '/uploads/' . $photo);
 				
 				//return $this->redirect(['view', 'id' => $model->id_order]);
 				return $this->redirect(['index']);
 			} else {
 				echo "<pre>";
-					echo "<br />";
-					echo "<br />";
-					echo "<br />";
-					echo "<br />";
+				echo "<br />";
+				echo "<br />";
+				echo "<br />";
+				echo "<br />";
 					print_r($model->getErrors());
-					echo "</pre>";
-				//}
+				echo "</pre>";
 			}
 		}
 		return $this->render('create', [

@@ -7,6 +7,8 @@ use yii\jui\DatePicker;
 /* @var $this yii\web\View */
 /* @var $model app\models\Order */
 /* @var $form yii\widgets\ActiveForm */
+
+$this->params['breadcrumbs'];
 ?>
 
 <div class="order-form">
@@ -21,7 +23,7 @@ use yii\jui\DatePicker;
     ]); ?>
 		<?= $form->field($model, 'company_name')->textInput([
 							    'placeholder' => 'PT ',
-							    'value' => 'PT ',
+							    'value' => isset($model->company_name) ? $model->company_name : 'PT ',
 							]) ?>
 		<?= $form->field($model, 'loading_date')->widget(\yii\jui\DatePicker::classname(), [
 			//'language' => 'ru',
@@ -34,7 +36,7 @@ use yii\jui\DatePicker;
 		<?= $form->field($model, 'location')->textArea() ?>
 		<?= $form->field($model, 'price')->textInput([
 							'placeholder' => 'Rp ',
-							'value' => 'Rp ',
+							'value' => isset($model->price) ? 'Rp '.$model->price : 'Rp ',
 							'onkeyup' => 'titikribuan(this)',
 							'onkeydown' => 'return numbersonly(this, event)',
 							'onselect' => 'return false',

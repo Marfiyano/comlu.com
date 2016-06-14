@@ -17,7 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
 	<br />
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
+        'filterModel' => $model,
 		'columns' => [
 			[
 				'attribute' => 'company_name',

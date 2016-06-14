@@ -4,6 +4,8 @@ namespace app\models;
 
 use Yii;
 use yii\db\ActiveRecord;
+use yii\base\Model;
+use yii\data\ActiveDataProvider;
 
 /**
  * Order is represent Order Table.
@@ -19,11 +21,9 @@ class Order extends ActiveRecord
     public function rules()
     {
         return [
-            // company_name, loading_date, unload_date, location, price is required
-	    [['company_name','loading_date','unload_date','location','price'], 'required'],
-	    // id_order, note, photo is required
-	    [['id_order','note','photo'], 'safe'],
-            // rememberMe must be a boolean value
+            //all field safe
+			[['id_order', 'company_name', 'loading_date', 'unload_date', 'location', 'price', 'tax', 'note', 'photo'], 'safe'],
+			[['id_order', 'price',], 'integer'],
         ];
     }
 
@@ -48,6 +48,58 @@ class Order extends ActiveRecord
 		];
 	}
 
+	/**
+     * @inheritdoc
+     */
+    public function scenarios()
+    {
+        // bypass scenarios() implementation in the parent class
+        return Model::scenarios();
+    }
+	
+	/**
+     * Creates data provider instance with search query applied
+     *
+     * @param array $params
+     *
+     * @return ActiveDataProvider
+     */
+    public function search($params)
+    {
+        $query = Order::find();
+
+        // add conditions that should always apply here
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
+
+        $this->load($params);
+
+        if (!$this->validate()) {
+            // uncomment the following line if you do not want to return any records when validation fails
+            // $query->where('0=1');
+            return $dataProvider;
+        }
+
+        // grid filtering conditions
+        /*$query->andFilterWhere([
+            'id_order' => $this->id_order,
+            'loading_date' => $this->loading_date,
+            'unload_date' => $this->unload_date,
+            'price' => $this->price,
+        ]);*/
+
+        $query->andFilterWhere(['like', 'company_name', $this->company_name])
+			->andFilterWhere(['like', 'loading_date', $this->loading_date])
+			->andFilterWhere(['like', 'unload_date', $this->unload_date])
+			->andFilterWhere(['like', 'location', $this->location])
+			->andFilterWhere(['like', 'price', $this->price])
+            ->andFilterWhere(['like', 'note', $this->note]);
+
+        return $dataProvider;
+    }
+	
 	/**
      * Validates the password.
      * This method serves as the inline validation for password.
