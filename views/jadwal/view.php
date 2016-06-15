@@ -6,13 +6,32 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\models\Order */
 
-$this->title = $model->id_order;
+$this->title = 'View Order';
 $this->params['breadcrumbs'][] = ['label' => 'Orders', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="order-view">
-
     <h1><?= Html::encode($this->title) ?></h1>
+    
+    <?= DetailView::widget([
+        'model' => $model,
+        'attributes' => [
+            'company_name',
+            'loading_date',
+            'unload_date',
+            'location',
+            [
+		'label' => 'Price',
+		'attribute' => 'price',
+		'format' => 'Currency',
+            ],
+	    'note',
+            [
+		'label' => 'Photo',
+		'value' => ($model->photo == '') ? 'No Photo' : 'Show Photo',
+	    ],
+        ],
+    ]) ?>
 
     <p>
         <?= Html::a('Update', ['update', 'id' => $model->id_order], ['class' => 'btn btn-primary']) ?>
@@ -24,19 +43,12 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
         ]) ?>
     </p>
-
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'id_order',
-            'company_name',
-            'loading_date',
-            'unload_date',
-            'location',
-            'price',
-            'note',
-            'photo',
-        ],
-    ]) ?>
-
 </div>
+
+<?php
+$this->registerJs(
+    '$("document").ready(function(){
+	    
+	});'
+);
+?>

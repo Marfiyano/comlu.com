@@ -35,15 +35,57 @@ class JadwalController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new OrderSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $model = new Order();
+        $dataProvider = $model->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-            'searchModel' => $searchModel,
+            'model' => $model,
             'dataProvider' => $dataProvider,
         ]);
     }
-
+    
+    /**
+     * Creates a new Order model.
+     * If creation is successful, the browser will be redirected to the 'view' page.
+     * @return mixed
+     */
+    public function actionCreate()
+    {
+        $model = new Order();
+	
+        if ($model->load(Yii::$app->request->post())) {
+			if (substr($_POST['Order']['price'],3) == 'Rp ')
+				$model->price = str_replace('.','',substr($_POST['Order']['price'],3));
+			else
+				$model->price = str_replace('.','',$_POST['Order']['price']);
+			
+			//get uploaded photo
+			$photo = \yii\web\UploadedFile::getInstance($model, 'photo');
+			
+			if (isset($photo) && $photo->size !== 0)
+				$model->photo = $model->company_name. ' -' .$photo->name;
+				
+			if ($model->save()) {
+				if (isset($photo) && $photo->size !== 0) //save photo
+					$photo->saveAs(\Yii::$app->basePath . '/uploads/' . $photo);
+				
+				//return $this->redirect(['view', 'id' => $model->id_order]);
+				return $this->redirect(['index']);
+			} else {
+				echo "<pre>";
+				echo "<br />";
+				echo "<br />";
+				echo "<br />";
+				echo "<br />";
+					print_r($model->getErrors());
+				echo "</pre>";
+			}
+		}
+		return $this->render('create', [
+			'model' => $model,
+		]);
+	}
+	
     /**
      * Displays a single Order model.
      * @param integer $id
@@ -54,24 +96,6 @@ class JadwalController extends Controller
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
-    }
-
-    /**
-     * Creates a new Order model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
-     */
-    public function actionCreate()
-    {
-        $model = new Order();
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id_order]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
-        }
     }
 
     /**
