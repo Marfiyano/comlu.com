@@ -23,7 +23,7 @@ class Order extends ActiveRecord
         return [
             //all field safe
 			[['id_order', 'company_name', 'loading_date', 'unload_date', 'location', 'price', 'tax', 'note', 'photo'], 'safe'],
-			[['id_order', 'price',], 'integer'],
+			[['id_order',], 'integer'],
         ];
     }
 

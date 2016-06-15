@@ -81,6 +81,7 @@ class JadwalController extends Controller
 				echo "</pre>";
 			}
 		}
+		
 		return $this->render('create', [
 			'model' => $model,
 		]);
@@ -93,8 +94,12 @@ class JadwalController extends Controller
      */
     public function actionView($id)
     {
+		$model = $this->findModel($id);
+		$photo_name = explode("-",$model->photo);
+		$model->photo = $photo_name[1];
+		
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model' => $model,
         ]);
     }
 
@@ -107,14 +112,38 @@ class JadwalController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id_order]);
-        } else {
-            return $this->render('update', [
-                'model' => $model,
-            ]);
-        }
+		
+		if ($model->load(Yii::$app->request->post())) {
+			if (substr($_POST['Order']['price'],0,3) == 'Rp ')
+				$model->price = str_replace('.','',substr($_POST['Order']['price'],3));
+			else
+				$model->price = str_replace('.','',$_POST['Order']['price']);
+			
+			//get uploaded photo
+			$photo = \yii\web\UploadedFile::getInstance($model, 'photo');
+			
+			if (isset($photo) && $photo->size !== 0)
+				$model->photo = $model->company_name. ' -' .$photo->name;
+				
+			if ($model->save()) {
+				if (isset($photo) && $photo->size !== 0) //save photo
+					$photo->saveAs(\Yii::$app->basePath . '/uploads/' . $photo);
+				
+				return $this->redirect(['view', 'id' => $model->id_order]);
+			} else {
+				echo "<pre>";
+				echo "<br />";
+				echo "<br />";
+				echo "<br />";
+				echo "<br />";
+					print_r($model->getErrors());
+				echo "</pre>";
+			}
+		}
+		
+		return $this->render('update', [
+			'model' => $model,
+		]);
     }
 
     /**

@@ -64,7 +64,31 @@ $this->params['breadcrumbs'];
 <?php
 $this->registerJs(
     '$("document").ready(function(){
-		//console.log("hi");
+		var addRupiah;
+		var id_price = $("#order-price").val();
+		if (id_price.substr(0,3) == "Rp ") {
+			addRupiah = "Rp ";
+			angka = id_price.substr(3);
+		} else {
+			addRupiah = "";
+			angka = id_price;
+		}
+		for(g=angka.length; g>0; g--){
+			//hilangkan semua titik terlebih dahulu
+			angka = angka.replace(".","");
+		}
+		
+		hasil_akhir = "";
+		jumlah_angka = 0;
+		for (g=angka.length; g>0; g--){
+			jumlah_angka++;
+			if (((jumlah_angka % 3) == 1) && (jumlah_angka != 1)){
+				hasil_akhir = angka.substr(g-1,1) + "." + hasil_akhir;
+			} else {
+				hasil_akhir = angka.substr(g-1,1) + hasil_akhir;
+			}
+		}
+		$("#order-price").val(addRupiah+hasil_akhir);
 	});'
 );
 ?>

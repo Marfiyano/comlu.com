@@ -15,33 +15,43 @@ $this->params['breadcrumbs'][] = $this->title;
     
     <?= DetailView::widget([
         'model' => $model,
+		'template' => '<tr><th style="width:20%">{label}</th><td>{value}</td></tr>',
         'attributes' => [
-            'company_name',
-            'loading_date',
-            'unload_date',
-            'location',
-            [
-		'label' => 'Price',
-		'attribute' => 'price',
-		'format' => 'Currency',
-            ],
-	    'note',
-            [
-		'label' => 'Photo',
-		'value' => ($model->photo == '') ? 'No Photo' : 'Show Photo',
-	    ],
+			[
+				'label' => 'Company Name',
+				'value' => $model->company_name,
+			],
+			'loading_date',
+			'unload_date',
+			'location',
+			[
+				'label' => 'Price',
+				'attribute' => 'price',
+				'format' => 'Currency',
+			],
+			'note',
+			[
+				'label' => 'Photo',
+				'value' => '../uploads/'.$model->photo,
+				'format' => ['image',['width'=>'200','height'=>'200']],	
+			],
         ],
     ]) ?>
 
     <p>
         <?= Html::a('Update', ['update', 'id' => $model->id_order], ['class' => 'btn btn-primary']) ?>
         <?= Html::a('Delete', ['delete', 'id' => $model->id_order], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
+																		'class' => 'btn btn-danger',
+																		'data' => [
+																			'confirm' => 'Are you sure you want to delete this item?',
+																			'method' => 'post',
+																		],
+																	]) ?>
+	</p>
+	<p>
+		<?= Html::a('Back' , ['/jadwal'], [
+											'class' => 'btn btn-info',
+										  ]) ?>
     </p>
 </div>
 
