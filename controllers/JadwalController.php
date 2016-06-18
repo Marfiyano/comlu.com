@@ -54,11 +54,13 @@ class JadwalController extends Controller
         $model = new Order();
 	
         if ($model->load(Yii::$app->request->post())) {
-			if (substr($_POST['Order']['price'],3) == 'Rp ')
+			if (substr($_POST['Order']['price'],0,3) == 'Rp ') {
 				$model->price = str_replace('.','',substr($_POST['Order']['price'],3));
-			else
+			} else
 				$model->price = str_replace('.','',$_POST['Order']['price']);
 			
+			$model->loading_date = date('Y-m-d',strtotime($_POST['Order']['loading_date']));
+			$model->unload_date = date('Y-m-d',strtotime($_POST['Order']['unload_date']));
 			//get uploaded photo
 			$photo = \yii\web\UploadedFile::getInstance($model, 'photo');
 			
@@ -80,6 +82,13 @@ class JadwalController extends Controller
 					print_r($model->getErrors());
 				echo "</pre>";
 			}
+			echo "<pre>";
+			echo "<br />";
+			echo "<br />";
+			echo "<br />";
+			echo "<br />";
+				print_r($model);
+			echo "</pre>";
 		}
 		
 		return $this->render('create', [
@@ -95,9 +104,10 @@ class JadwalController extends Controller
     public function actionView($id)
     {
 		$model = $this->findModel($id);
-		$photo_name = explode("-",$model->photo);
-		$model->photo = $photo_name[1];
-		
+		if(!empty($model->photo)) { 
+			$photo_name = explode("-",$model->photo);
+			$model->photo = $photo_name[1];
+		}
         return $this->render('view', [
             'model' => $model,
         ]);

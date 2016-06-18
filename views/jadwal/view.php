@@ -32,8 +32,8 @@ $this->params['breadcrumbs'][] = $this->title;
 			'note',
 			[
 				'label' => 'Photo',
-				'value' => '../uploads/'.$model->photo,
-				'format' => ['image',['width'=>'200','height'=>'200']],	
+				'value' => (!empty($model->photo) ? '../uploads/'.$model->photo : 'no photo'),
+				'format' => (!empty($model->photo) ? ['image',['width'=>'200','height'=>'200']] : ['text',['width'=>'auto','height'=>'auto']]),	
 			],
         ],
     ]) ?>
