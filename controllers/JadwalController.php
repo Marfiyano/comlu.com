@@ -58,7 +58,7 @@ class JadwalController extends Controller
 				$model->price = str_replace('.','',substr($_POST['Order']['price'],3));
 			} else
 				$model->price = str_replace('.','',$_POST['Order']['price']);
-			
+			//date format php
 			$model->loading_date = date('Y-m-d',strtotime($_POST['Order']['loading_date']));
 			$model->unload_date = date('Y-m-d',strtotime($_POST['Order']['unload_date']));
 			//get uploaded photo
