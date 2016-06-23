@@ -4,9 +4,11 @@ namespace app\controllers;
 
 use Yii;
 use app\models\Order;
-use app\models\OrderSearch;
+use app\models\Group_Priv;
 use yii\web\Controller;
+use yii\filters\AccessControl;
 use yii\web\NotFoundHttpException;
+use yii\web\ForbiddenHttpException;
 use yii\filters\VerbFilter;
 
 /**
@@ -26,6 +28,21 @@ class JadwalController extends Controller
                     'delete' => ['POST'],
                 ],
             ],
+			'access' => [
+				'class' => AccessControl::className(),
+				//'only' => ['logout', 'signup'], //uncomment this line if you dont want all actions to take guest to login page
+				'rules' => [
+					[
+						'actions' => ['login', 'error'],
+						'allow' => true,
+					],
+					[
+						'actions' => ['logout', 'index'], // add all actions to take guest to login page
+						'allow' => true,
+						'roles' => ['@'],
+					],
+				],
+			],
         ];
     }
 
@@ -35,13 +52,30 @@ class JadwalController extends Controller
      */
     public function actionIndex()
     {
-        $model = new Order();
-        $dataProvider = $model->search(Yii::$app->request->queryParams);
+		$allow_view = false;
+		if(!Yii::$app->user->isGuest) {
+			$gp_model = new Group_Priv();
+			$access_priv = $gp_model->getPriv(Yii::$app->user->identity->group_id, 6);
+			
+			if(count($access_priv)>0) {
+				for($g=0;$g<count($access_priv);$g++) {
+					if($access_priv[$g] == 'lihat')
+						$allow_view = true;
+				}
+			}
+		}
+		
+		if($allow_view) {
+			$model = new Order();
+			$dataProvider = $model->search(Yii::$app->request->queryParams);
 
-        return $this->render('index', [
-            'model' => $model,
-            'dataProvider' => $dataProvider,
-        ]);
+			return $this->render('index', [
+				'model' => $model,
+				'dataProvider' => $dataProvider,
+			]);
+		} else {
+			throw new ForbiddenHttpException('You are not authorized to access this page');
+		}
     }
     
     /**
@@ -50,41 +84,58 @@ class JadwalController extends Controller
      * @return mixed
      */
     public function actionCreate()
-    {
-        $model = new Order();
-	
-        if ($model->load(Yii::$app->request->post())) {
-			if (substr($_POST['Order']['price'],3) == 'Rp ')
-				$model->price = str_replace('.','',substr($_POST['Order']['price'],3));
-			else
-				$model->price = str_replace('.','',$_POST['Order']['price']);
+    {	
+		$allow_add = false;
+		if(!Yii::$app->user->isGuest) {
+			$gp_model = new Group_Priv();
+			$access_priv = $gp_model->getPriv(Yii::$app->user->identity->group_id, 6);
 			
-			//get uploaded photo
-			$photo = \yii\web\UploadedFile::getInstance($model, 'photo');
-			
-			if (isset($photo) && $photo->size !== 0)
-				$model->photo = $model->company_name. ' -' .$photo->name;
-				
-			if ($model->save()) {
-				if (isset($photo) && $photo->size !== 0) //save photo
-					$photo->saveAs(\Yii::$app->basePath . '/uploads/' . $photo);
-				
-				//return $this->redirect(['view', 'id' => $model->id_order]);
-				return $this->redirect(['index']);
-			} else {
-				echo "<pre>";
-				echo "<br />";
-				echo "<br />";
-				echo "<br />";
-				echo "<br />";
-					print_r($model->getErrors());
-				echo "</pre>";
+			if(count($access_priv)>0) {
+				for($g=0;$g<count($access_priv);$g++) {
+					if($access_priv[$g] == 'tambah')
+						$allow_add = true;
+				}
 			}
 		}
+			
+		if($allow_add) {
+			$model = new Order();
 		
-		return $this->render('create', [
-			'model' => $model,
-		]);
+			if ($model->load(Yii::$app->request->post())) {
+				if (substr($_POST['Order']['price'],3) == 'Rp ')
+					$model->price = str_replace('.','',substr($_POST['Order']['price'],3));
+				else
+					$model->price = str_replace('.','',$_POST['Order']['price']);
+				
+				//get uploaded photo
+				$photo = \yii\web\UploadedFile::getInstance($model, 'photo');
+				
+				if (isset($photo) && $photo->size !== 0)
+					$model->photo = $model->company_name. ' -' .$photo->name;
+					
+				if ($model->save()) {
+					if (isset($photo) && $photo->size !== 0) //save photo
+						$photo->saveAs(\Yii::$app->basePath . '/uploads/' . $photo);
+					
+					//return $this->redirect(['view', 'id' => $model->id_order]);
+					return $this->redirect(['index']);
+				} else {
+					echo "<pre>";
+					echo "<br />";
+					echo "<br />";
+					echo "<br />";
+					echo "<br />";
+						print_r($model->getErrors());
+					echo "</pre>";
+				}
+			}
+			
+			return $this->render('create', [
+				'model' => $model,
+			]);
+		} else {
+			throw new ForbiddenHttpException('You are not authorized to access this page');
+		}
 	}
 	
     /**
@@ -94,13 +145,17 @@ class JadwalController extends Controller
      */
     public function actionView($id)
     {
-		$model = $this->findModel($id);
-		$photo_name = explode("-",$model->photo);
-		$model->photo = $photo_name[1];
-		
-        return $this->render('view', [
-            'model' => $model,
-        ]);
+		if(!Yii::$app->user->isGuest) { //user must be login first
+			$model = $this->findModel($id);
+			$photo_name = explode("-",$model->photo);
+			$model->photo = $photo_name[1];
+			
+			return $this->render('view', [
+				'model' => $model,
+			]);
+		} else {
+			throw new ForbiddenHttpException('You are not authorized to access this page');
+		}
     }
 
     /**
@@ -111,39 +166,43 @@ class JadwalController extends Controller
      */
     public function actionUpdate($id)
     {
-        $model = $this->findModel($id);
-		
-		if ($model->load(Yii::$app->request->post())) {
-			if (substr($_POST['Order']['price'],0,3) == 'Rp ')
-				$model->price = str_replace('.','',substr($_POST['Order']['price'],3));
-			else
-				$model->price = str_replace('.','',$_POST['Order']['price']);
+		if(!Yii::$app->user->isGuest) { //user must be login first
+			$model = $this->findModel($id);
 			
-			//get uploaded photo
-			$photo = \yii\web\UploadedFile::getInstance($model, 'photo');
-			
-			if (isset($photo) && $photo->size !== 0)
-				$model->photo = $model->company_name. ' -' .$photo->name;
+			if ($model->load(Yii::$app->request->post())) {
+				if (substr($_POST['Order']['price'],0,3) == 'Rp ')
+					$model->price = str_replace('.','',substr($_POST['Order']['price'],3));
+				else
+					$model->price = str_replace('.','',$_POST['Order']['price']);
 				
-			if ($model->save()) {
-				if (isset($photo) && $photo->size !== 0) //save photo
-					$photo->saveAs(\Yii::$app->basePath . '/uploads/' . $photo);
+				//get uploaded photo
+				$photo = \yii\web\UploadedFile::getInstance($model, 'photo');
 				
-				return $this->redirect(['view', 'id' => $model->id_order]);
-			} else {
-				echo "<pre>";
-				echo "<br />";
-				echo "<br />";
-				echo "<br />";
-				echo "<br />";
-					print_r($model->getErrors());
-				echo "</pre>";
+				if (isset($photo) && $photo->size !== 0)
+					$model->photo = $model->company_name. ' -' .$photo->name;
+					
+				if ($model->save()) {
+					if (isset($photo) && $photo->size !== 0) //save photo
+						$photo->saveAs(\Yii::$app->basePath . '/uploads/' . $photo);
+					
+					return $this->redirect(['view', 'id' => $model->id_order]);
+				} else {
+					echo "<pre>";
+					echo "<br />";
+					echo "<br />";
+					echo "<br />";
+					echo "<br />";
+						print_r($model->getErrors());
+					echo "</pre>";
+				}
 			}
+			
+			return $this->render('update', [
+				'model' => $model,
+			]);
+		} else {
+			throw new ForbiddenHttpException('You are not authorized to access this page');
 		}
-		
-		return $this->render('update', [
-			'model' => $model,
-		]);
     }
 
     /**
@@ -154,9 +213,13 @@ class JadwalController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+		if(!Yii::$app->user->isGuest) { //user must be login first
+			$this->findModel($id)->delete();
 
-        return $this->redirect(['index']);
+			return $this->redirect(['index']);
+		} else {
+			throw new ForbiddenHttpException('You are not authorized to access this page');
+		}
     }
 
     /**

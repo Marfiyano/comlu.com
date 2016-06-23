@@ -22,8 +22,8 @@ class Order extends ActiveRecord
     {
         return [
             //all field safe
-			[['id_order', 'company_name', 'loading_date', 'unload_date', 'location', 'price', 'tax', 'note', 'photo'], 'safe'],
-			[['id_order',], 'integer'],
+			[['order_id', 'company_name', 'loading_date', 'unload_date', 'location', 'price', 'tax', 'note', 'photo'], 'safe'],
+			[['order_id',], 'integer'],
         ];
     }
 
@@ -107,7 +107,7 @@ class Order extends ActiveRecord
      * @param string $attribute the attribute currently being validated
      * @param array $params the additional name-value pairs given in the rule
      */
-    public function validatePassword($attribute, $params)
+    /*public function validatePassword($attribute, $params)
     {
         if (!$this->hasErrors()) {
             $user = $this->getUser();
@@ -116,7 +116,7 @@ class Order extends ActiveRecord
                 $this->addError($attribute, 'Incorrect username or password.');
             }
         }
-    }
+    }*/
 
     /**
      * Finds user by [[username]]
