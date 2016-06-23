@@ -65,7 +65,7 @@ class JadwalController extends Controller
 			}
 		}
 		
-		if($allow_view) {
+		if($allow_view) { //check permission
 			$model = new Order();
 			$dataProvider = $model->search(Yii::$app->request->queryParams);
 
@@ -98,17 +98,21 @@ class JadwalController extends Controller
 			}
 		}
 			
-		if($allow_add) {
+		if($allow_add) { //check permission
 			$model = new Order();
 		
 			if ($model->load(Yii::$app->request->post())) {
-				if (substr($_POST['Order']['price'],3) == 'Rp ')
-					$model->price = str_replace('.','',substr($_POST['Order']['price'],3));
-				else
-					$model->price = str_replace('.','',$_POST['Order']['price']);
-				
-				//get uploaded photo
-				$photo = \yii\web\UploadedFile::getInstance($model, 'photo');
+				if (substr($_POST['Order']['price'],0,3) == 'Rp ') {
+				$model->price = str_replace('.','',substr($_POST['Order']['price'],3));
+			} else
+				$model->price = str_replace('.','',$_POST['Order']['price']);
+			
+			//date format php
+			$model->loading_date = date('Y-m-d',strtotime($_POST['Order']['loading_date']));
+			$model->unload_date = date('Y-m-d',strtotime($_POST['Order']['unload_date']));
+			
+			//get uploaded photo
+			$photo = \yii\web\UploadedFile::getInstance($model, 'photo');
 				
 				if (isset($photo) && $photo->size !== 0)
 					$model->photo = $model->company_name. ' -' .$photo->name;
@@ -147,8 +151,11 @@ class JadwalController extends Controller
     {
 		if(!Yii::$app->user->isGuest) { //user must be login first
 			$model = $this->findModel($id);
-			$photo_name = explode("-",$model->photo);
-			$model->photo = $photo_name[1];
+			
+			if(!empty($model->photo)) { 
+				$photo_name = explode("-",$model->photo);
+				$model->photo = $photo_name[1];
+			}
 			
 			return $this->render('view', [
 				'model' => $model,

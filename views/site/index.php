@@ -2,7 +2,7 @@
 
 /* @var $this yii\web\View */
 
-$this->title = 'My First Web';
+$this->title = 'PT...';
 ?>
 <div class="site-index">
 

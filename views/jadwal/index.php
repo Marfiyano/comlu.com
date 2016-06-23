@@ -52,6 +52,13 @@ $this->params['breadcrumbs'][] = $this->title;
 				'format' => 'Currency',
 			],
 			[
+				'attribute' => 'tax',
+				'headerOptions' => ['class' => 'text-center'],
+				'contentOptions' => [
+					'class' => 'text-center col-lg-2 col-md-1 col-sm-1 col-xm-1',
+				],
+			],
+			[
 				'attribute' => 'note',
 				'headerOptions' => ['class' => 'text-center'],
 				'contentOptions' => [
