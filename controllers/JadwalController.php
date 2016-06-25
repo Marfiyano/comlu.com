@@ -5,6 +5,7 @@ namespace app\controllers;
 use Yii;
 use app\models\Order;
 use app\models\Group_Priv;
+use app\models\Module;
 use yii\web\Controller;
 use yii\filters\AccessControl;
 use yii\web\NotFoundHttpException;
@@ -37,7 +38,7 @@ class JadwalController extends Controller
 						'allow' => true,
 					],
 					[
-						'actions' => ['logout', 'index'], // add all actions to take guest to login page
+						'actions' => ['logout', 'index', 'create', 'view', 'update', 'delete'], // add all actions to take guest to login page
 						'allow' => true,
 						'roles' => ['@'],
 					],
@@ -53,14 +54,24 @@ class JadwalController extends Controller
     public function actionIndex()
     {
 		$allow_view = false;
+		$allow_update = false;
+		$allow_delete = false;
+		
 		if(!Yii::$app->user->isGuest) {
 			$gp_model = new Group_Priv();
-			$access_priv = $gp_model->getPriv(Yii::$app->user->identity->group_id, 6);
+			$module_model = new Module();
+			
+			$module_id = $module_model->getModule(Yii::$app->controller->id)[0]->module_id;
+			$access_priv = $gp_model->getPriv(Yii::$app->user->identity->group_id, $module_id);
 			
 			if(count($access_priv)>0) {
 				for($g=0;$g<count($access_priv);$g++) {
 					if($access_priv[$g] == 'lihat')
 						$allow_view = true;
+					if($access_priv[$g] == 'update')
+						$allow_update = true;
+					if($access_priv[$g] == 'hapus')
+						$allow_delete = true;
 				}
 			}
 		}
@@ -72,6 +83,9 @@ class JadwalController extends Controller
 			return $this->render('index', [
 				'model' => $model,
 				'dataProvider' => $dataProvider,
+				'allow_view' => $allow_view,
+				'allow_update' => $allow_update,
+				'allow_delete' => $allow_delete,
 			]);
 		} else {
 			throw new ForbiddenHttpException('You are not authorized to access this page');
@@ -88,7 +102,10 @@ class JadwalController extends Controller
 		$allow_add = false;
 		if(!Yii::$app->user->isGuest) {
 			$gp_model = new Group_Priv();
-			$access_priv = $gp_model->getPriv(Yii::$app->user->identity->group_id, 6);
+			$module_model = new Module();
+			
+			$module_id = $module_model->getModule(Yii::$app->controller->id)[0]->module_id;
+			$access_priv = $gp_model->getPriv(Yii::$app->user->identity->group_id, $module_id);
 			
 			if(count($access_priv)>0) {
 				for($g=0;$g<count($access_priv);$g++) {
@@ -102,17 +119,17 @@ class JadwalController extends Controller
 			$model = new Order();
 		
 			if ($model->load(Yii::$app->request->post())) {
-				if (substr($_POST['Order']['price'],0,3) == 'Rp ') {
-				$model->price = str_replace('.','',substr($_POST['Order']['price'],3));
-			} else
-				$model->price = str_replace('.','',$_POST['Order']['price']);
+				if (substr($_POST['Order']['price'],0,3) == 'Rp ')
+					$model->price = str_replace('.','',substr($_POST['Order']['price'],3));
+				else
+					$model->price = str_replace('.','',$_POST['Order']['price']);
 			
-			//date format php
-			$model->loading_date = date('Y-m-d',strtotime($_POST['Order']['loading_date']));
-			$model->unload_date = date('Y-m-d',strtotime($_POST['Order']['unload_date']));
+				//date format php
+				$model->loading_date = date('Y-m-d',strtotime($_POST['Order']['loading_date']));
+				$model->unload_date = date('Y-m-d',strtotime($_POST['Order']['unload_date']));
 			
-			//get uploaded photo
-			$photo = \yii\web\UploadedFile::getInstance($model, 'photo');
+				//get uploaded photo
+				$photo = \yii\web\UploadedFile::getInstance($model, 'photo');
 				
 				if (isset($photo) && $photo->size !== 0)
 					$model->photo = $model->company_name. ' -' .$photo->name;
@@ -149,7 +166,30 @@ class JadwalController extends Controller
      */
     public function actionView($id)
     {
-		if(!Yii::$app->user->isGuest) { //user must be login first
+		$allow_view = false;
+		$allow_update = false;
+		$allow_delete = false;
+		
+		if(!Yii::$app->user->isGuest) {
+			$gp_model = new Group_Priv();
+			$module_model = new Module();
+			
+			$module_id = $module_model->getModule(Yii::$app->controller->id)[0]->module_id;
+			$access_priv = $gp_model->getPriv(Yii::$app->user->identity->group_id, $module_id);
+			
+			if(count($access_priv)>0) {
+				for($g=0;$g<count($access_priv);$g++) {
+					if($access_priv[$g] == 'lihat')
+						$allow_view = true;
+					if($access_priv[$g] == 'update')
+						$allow_update = true;
+					if($access_priv[$g] == 'hapus')
+						$allow_delete = true;
+				}
+			}
+		}
+		
+		if($allow_view) { //check permission
 			$model = $this->findModel($id);
 			
 			if(!empty($model->photo)) { 
@@ -159,6 +199,9 @@ class JadwalController extends Controller
 			
 			return $this->render('view', [
 				'model' => $model,
+				'allow_view' => $allow_view,
+				'allow_update' => $allow_update,
+				'allow_delete' => $allow_delete,
 			]);
 		} else {
 			throw new ForbiddenHttpException('You are not authorized to access this page');
@@ -173,7 +216,23 @@ class JadwalController extends Controller
      */
     public function actionUpdate($id)
     {
-		if(!Yii::$app->user->isGuest) { //user must be login first
+		$allow_update = false;
+		if(!Yii::$app->user->isGuest) {
+			$gp_model = new Group_Priv();
+			$module_model = new Module();
+			
+			$module_id = $module_model->getModule(Yii::$app->controller->id)[0]->module_id;
+			$access_priv = $gp_model->getPriv(Yii::$app->user->identity->group_id, $module_id);
+			
+			if(count($access_priv)>0) {
+				for($g=0;$g<count($access_priv);$g++) {
+					if($access_priv[$g] == 'update')
+						$allow_update = true;
+				}
+			}
+		}
+		
+		if($allow_update) { //check permission
 			$model = $this->findModel($id);
 			
 			if ($model->load(Yii::$app->request->post())) {
@@ -182,17 +241,21 @@ class JadwalController extends Controller
 				else
 					$model->price = str_replace('.','',$_POST['Order']['price']);
 				
+				//date format php
+				$model->loading_date = date('Y-m-d',strtotime($_POST['Order']['loading_date']));
+				$model->unload_date = date('Y-m-d',strtotime($_POST['Order']['unload_date']));
+				
 				//get uploaded photo
 				$photo = \yii\web\UploadedFile::getInstance($model, 'photo');
-				
+					
 				if (isset($photo) && $photo->size !== 0)
 					$model->photo = $model->company_name. ' -' .$photo->name;
-					
+						
 				if ($model->save()) {
 					if (isset($photo) && $photo->size !== 0) //save photo
 						$photo->saveAs(\Yii::$app->basePath . '/uploads/' . $photo);
 					
-					return $this->redirect(['view', 'id' => $model->id_order]);
+					return $this->redirect(['view', 'id' => $model->order_id]);
 				} else {
 					echo "<pre>";
 					echo "<br />";
@@ -220,8 +283,26 @@ class JadwalController extends Controller
      */
     public function actionDelete($id)
     {
-		if(!Yii::$app->user->isGuest) { //user must be login first
-			$this->findModel($id)->delete();
+		$allow_delete = false;
+		if(!Yii::$app->user->isGuest) {
+			$gp_model = new Group_Priv();
+			$module_model = new Module();
+			
+			$module_id = $module_model->getModule(Yii::$app->controller->id)[0]->module_id;
+			$access_priv = $gp_model->getPriv(Yii::$app->user->identity->group_id, $module_id);
+			
+			if(count($access_priv)>0) {
+				for($g=0;$g<count($access_priv);$g++) {
+					if($access_priv[$g] == 'hapus')
+						$allow_delete = true;
+				}
+			}
+		}
+		
+		if($allow_delete) { //check permission
+			$model = $this->findModel($id);
+			$model->status_order='0';
+			$model->save();
 
 			return $this->redirect(['index']);
 		} else {

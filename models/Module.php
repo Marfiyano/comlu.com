@@ -62,13 +62,13 @@ class Module extends ActiveRecord
      *
      * @return array of access_priv
      */
-    public function getModule()
+    public function getModule($module_name='')
     {
 		$data = Module::find()
-				->where('menu ="1"')
+				->where(($module_name != "" ? 'module_name = "'.$module_name.'" AND ' : "").'menu ="1"')
 				->orderBy('order')
 				->all();
-					
+		
         return $data;
     }
 }

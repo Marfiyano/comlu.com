@@ -22,33 +22,66 @@ $this->params['breadcrumbs'];
         ],
     ]); ?>
 		<?= $form->field($model, 'company_name')->textInput([
-							    'placeholder' => 'PT ',
-							    'value' => isset($model->company_name) ? $model->company_name : 'PT ',
+							'placeholder' => 'PT ',
+							'value' => isset($model->company_name) ? $model->company_name : 'PT ',
+							'readonly' => (Yii::$app->user->identity->group_id == 5) ? true : false,
 							]) ?>
-		<?= $form->field($model, 'loading_date')->widget(\yii\jui\DatePicker::classname(), [
-			//'language' => 'ru',
-			//'dateFormat' => 'yyyy-MM-dd',
-		    ]) ?>
-		<?= $form->field($model, 'unload_date')->widget(\yii\jui\DatePicker::classname(), [
-			//'language' => 'ru',
-			//'dateFormat' => 'yyyy-MM-dd',
-		    ]) ?>
-		<?= $form->field($model, 'location')->textArea() ?>
-		<?= $form->field($model, 'price')->textInput([
+		<?= //orang lapangan tidak boleh ganti tanggal
+			(Yii::$app->user->identity->group_id != 5) ?
+			$form->field($model, 'loading_date')->widget(\yii\jui\DatePicker::classname(), [
+							//'language' => 'ru',
+							//'dateFormat' => 'yyyy-MM-dd',
+							]) :
+			$form->field($model, 'loading_date')->textInput([
+							'value' => $model->loading_date,
+							'readonly' => true,
+							'style' => 'width:160px'
+							]) ?>
+		<?= //orang lapangan tidak boleh ganti tanggal
+			(Yii::$app->user->identity->group_id != 5) ?
+			$form->field($model, 'unload_date')->widget(\yii\jui\DatePicker::classname(), [
+							//'language' => 'ru',
+							//'dateFormat' => 'yyyy-MM-dd',
+							]) :
+			$form->field($model, 'unload_date')->textInput([
+							'value' => $model->unload_date,
+							'readonly' => true,
+							'style' => 'width:160px'
+							]) ?>					
+		<?= $form->field($model, 'location')->textArea([
+							'readonly' => (Yii::$app->user->identity->group_id == 5) ? true : false,
+							]) ?>
+		<?= //orang lapangan tidak perlu lihat harga
+			(Yii::$app->user->identity->group_id != 5) ?
+			$form->field($model, 'price')->textInput([
 							'placeholder' => 'Rp ',
 							'value' => isset($model->price) ? 'Rp '.$model->price : 'Rp ',
 							'onkeyup' => 'titikribuan(this)',
 							'onkeydown' => 'return numbersonly(this, event)',
 							'onselect' => 'return false',
-							]) ?>
-		<?= $form->field($model, 'tax')->radioList([
+							]) :
+			$form->field($model, 'price', ['options' => ['class' => 'form-group hide']])->textInput([
+							'value' => 'Rp '.$model->price,
+							'type' => 'hidden',
+							])->label(false)?>
+		<?= //orang lapangan tidak perlu lihat tax
+			(Yii::$app->user->identity->group_id != 5) ?
+			$form->field($model, 'tax')->radioList([
 							'0' => 'No tax',
 							'1' => 'With tax',
+							]) :
+			$form->field($model, 'tax', ['options' => ['class' => 'form-group hide']])->textInput([
+							'value' => $model->tax,
+							'type' => 'hidden',
+							])->label(false)?>
+		<?= $form->field($model, 'note')->textArea([
+							'readonly' => (Yii::$app->user->identity->group_id == 5) ? true : false,
 							]) ?>
-		<?= $form->field($model, 'note')->textArea() ?>
-		<?= $form->field($model, 'photo')->fileinput([
+		<?= //hanya direktur dan orang lapangan yang boleh upload foto
+			(Yii::$app->user->identity->group_id == 2 || Yii::$app->user->identity->group_id == 5) ? 
+			$form->field($model, 'photo')->fileinput([
 							'accept' => 'image/*',	      
-						    ]) ?>
+							]) : '' ?>
 
 		<div class="controls col-lg-offset-2">
 			<?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' =>'btn btn-success']) ?>

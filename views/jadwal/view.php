@@ -24,12 +24,19 @@ $this->params['breadcrumbs'][] = $this->title;
 			'loading_date',
 			'unload_date',
 			'location',
+			//orang lapangan tidak perlu lihat harga
 			[
 				'label' => 'Price',
 				'attribute' => 'price',
 				'format' => 'Currency',
+				'visible' => (Yii::$app->user->identity->group_id != 5) ? true : false,
 			],
-			'tax',
+			//orang lapangan tidak perlu lihat tax
+			[
+				'label' => 'Tax',
+				'value' => ($model->tax == 0 ? 'No Tax' : 'With Tax'),
+				'visible' => (Yii::$app->user->identity->group_id != 5) ? true : false,
+			],
 			'note',
 			[
 				'label' => 'Photo',
@@ -40,18 +47,17 @@ $this->params['breadcrumbs'][] = $this->title;
     ]) ?>
 
     <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id_order], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->id_order], [
+        <?= ($allow_update) ? Html::a('Update', ['update', 'id' => $model->order_id], ['class' => 'btn btn-success']) : ''?>
+        <?= ($allow_delete) ? Html::a('Delete', ['delete', 'id' => $model->order_id], [
 																		'class' => 'btn btn-danger',
 																		'data' => [
 																			'confirm' => 'Are you sure you want to delete this item?',
 																			'method' => 'post',
 																		],
-																	]) ?>
-	</p>
-	<p>
+																	]) : '' ?>
+	
 		<?= Html::a('Back' , ['/jadwal'], [
-											'class' => 'btn btn-info',
+											'class' => 'btn btn-primary',
 										  ]) ?>
     </p>
 </div>

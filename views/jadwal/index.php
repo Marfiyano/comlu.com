@@ -4,11 +4,12 @@ use yii\helpers\Html;
 use yii\grid\GridView;
 
 /* @var $this yii\web\View */
-/* @var $searchModel app\models\OrderSearch */
+/* @var $searchModel app\models\Order */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = 'Orders';
 $this->params['breadcrumbs'][] = $this->title;
+
 ?>
 <div class="order-index">
 
@@ -50,6 +51,7 @@ $this->params['breadcrumbs'][] = $this->title;
 					'class' => 'text-center col-lg-2 col-md-1 col-sm-1 col-xm-1',
 				],
 				'format' => 'Currency',
+				'visible' => (Yii::$app->user->identity->group_id != 5),
 			],
 			[
 				'attribute' => 'tax',
@@ -66,12 +68,23 @@ $this->params['breadcrumbs'][] = $this->title;
 				],
 			],
 			[
-				'header' => 'Action',
+				'header' => 'Actions',
 				'headerOptions' => ['class' => 'text-center'],
 				'contentOptions' => [
 					'class' => 'text-center col-lg-1 col-md-1 col-sm-1 col-xm-1',
 				],
 				'class' => 'yii\grid\ActionColumn',
+				'visibleButtons' => [
+					'view' => function ($model, $key, $index) use ($allow_view) {
+						return $allow_view ? true : false;
+					 },
+					 'update' => function ($model, $key, $index) use ($allow_update) {
+						return $allow_update ? true : false;
+					 },
+					 'delete' => function ($model, $key, $index) use ($allow_delete) {
+						return $allow_delete ? true : false;
+					 }
+				]
 			],
 		],
     ]); ?>

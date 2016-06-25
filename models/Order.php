@@ -66,7 +66,7 @@ class Order extends ActiveRecord
      */
     public function search($params)
     {
-        $query = Order::find();
+        $query = Order::find()->where('status_order="1"');
 
         // add conditions that should always apply here
 

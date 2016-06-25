@@ -98,36 +98,6 @@ INSERT INTO `module` (`module_id`, `module_name`, `order`, `url`, `description`,
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `order`
---
-
-CREATE TABLE `order` (
-  `order_id` int(11) NOT NULL,
-  `type` enum('0','1','2','','') NOT NULL,
-  `company_name` varchar(255) NOT NULL,
-  `loading_date` date NOT NULL,
-  `unload_date` date NOT NULL,
-  `location` varchar(255) NOT NULL,
-  `price` int(11) NOT NULL,
-  `tax` enum('0','1','','') NOT NULL,
-  `note` varchar(255) DEFAULT '-',
-  `photo` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Dumping data untuk tabel `order`
---
-
-INSERT INTO `order` (`order_id`, `type`, `company_name`, `loading_date`, `unload_date`, `location`, `price`, `tax`, `note`, `photo`) VALUES
-(1, '0', 'PT Astra International', '2016-06-28', '2016-06-30', 'Sunter', 5000000, '0', '-', '0'),
-(2, '0', 'Universitas Bunda Mulia', '2016-06-13', '2016-06-17', 'Lodan Raya', 15000000, '0', '-', NULL),
-(3, '0', 'PT Mata Laba Laba', '2020-06-20', '2024-06-20', 'Central Park', 9000000, '0', '-', 'PT Mata Laba Laba -@ SapuLidi, Bandung.jpg'),
-(8, '0', 'PT Honda Jahanam', '2016-06-03', '2016-07-03', 'Mall Jahanam ', 2000000, '1', '', ''),
-(9, '0', 'PT aaaaa', '2016-06-01', '2016-07-01', 'aaa', 2000000, '1', '', '');
-
--- --------------------------------------------------------
-
---
 -- Struktur dari tabel `user`
 --
 
@@ -175,12 +145,6 @@ ALTER TABLE `group_user`
 --
 ALTER TABLE `module`
   ADD PRIMARY KEY (`module_id`);
-
---
--- Indexes for table `order`
---
-ALTER TABLE `order`
-  ADD PRIMARY KEY (`order_id`);
 
 --
 -- Indexes for table `user`
