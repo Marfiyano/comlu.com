@@ -21,14 +21,21 @@ AppAsset::register($this);
     <?= Html::csrfMetaTags() ?>
     <title><?= Html::encode($this->title) ?></title>
     <?php $this->head() ?>
-    <script type="text/javascript" src="<?php echo Yii::$app->request->baseUrl; ?>/js/helper.js"></script>
     <?php $this->registerJsFile(
 		    Yii::$app->request->baseUrl . '/js/helper.js',
 		    [
-			//'position'=>View::POS_END,
+			'position'=>yii\web\View::POS_HEAD,
 			'depends' => [\yii\web\JqueryAsset::className()]
 		    ]
-		); ?>
+		); 
+		$this->registerJsFile(
+			Yii::$app->request->baseUrl . '/js/highcharts.js',
+		    [
+			'position'=>yii\web\View::POS_HEAD,
+			'depends' => [\yii\web\JqueryAsset::className()]
+		    ]
+		); 
+		?>
 </head>
 <body>
 <?php $this->beginBody() ?>
