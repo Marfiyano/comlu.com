@@ -34,10 +34,11 @@ $this->params['breadcrumbs'][] = $this->title;
 			//orang lapangan tidak perlu lihat tax
 			[
 				'label' => 'Tax',
-				'value' => ($model->tax == 0 ? 'No Tax' : 'With Tax'),
+				'value' => ($model->tax == 0 ? 'No Tax' : ($model->tax == 1 ? 'PPN' :'PPN + PPH')),
 				'visible' => (Yii::$app->user->identity->group_id != 5) ? true : false,
 			],
 			'note',
+			'komplen',
 			[
 				'label' => 'Photo',
 				'value' => (!empty($model->photo) ? '../uploads/'.$model->photo : 'no photo'),
