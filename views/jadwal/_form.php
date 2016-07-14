@@ -37,7 +37,7 @@ $this->params['breadcrumbs'];
 							'readonly' => true,
 							'style' => 'width:160px'
 							]) ?>
-		<?= //orang lapangan tidak boleh ganti tanggal
+		<?= //orang lapangan tidak boleh ganti tanggal 
 			(Yii::$app->user->identity->group_id != 5) ?
 			$form->field($model, 'unload_date')->widget(\yii\jui\DatePicker::classname(), [
 							//'language' => 'ru',
@@ -68,7 +68,8 @@ $this->params['breadcrumbs'];
 			(Yii::$app->user->identity->group_id != 5) ?
 			$form->field($model, 'tax')->radioList([
 							'0' => 'No tax',
-							'1' => 'With tax',
+							'1' => 'PPN',
+							'2' => 'PPN + PPH',
 							]) :
 			$form->field($model, 'tax', ['options' => ['class' => 'form-group hide']])->textInput([
 							'value' => $model->tax,
@@ -77,6 +78,10 @@ $this->params['breadcrumbs'];
 		<?= $form->field($model, 'note')->textArea([
 							'readonly' => (Yii::$app->user->identity->group_id == 5) ? true : false,
 							]) ?>
+		<?= $form->field($model, 'komplen')->textArea([
+							'readonly' => (Yii::$app->user->identity->group_id == 5) ? true : false,
+							]) ?>						
+						
 		<?= //hanya direktur dan orang lapangan yang boleh upload foto
 			(Yii::$app->user->identity->group_id == 2 || Yii::$app->user->identity->group_id == 5) ? 
 			$form->field($model, 'photo')->fileinput([
