@@ -22,7 +22,7 @@ class Order extends ActiveRecord
     {
         return [
             //all field safe
-			[['order_id', 'company_name', 'loading_date', 'unload_date', 'location', 'price', 'tax', 'note', 'komplen', 'photo'], 'safe'],
+			[['order_id', 'company_name', 'loading_date', 'unload_date', 'location', 'price', 'tax', 'note', 'complaint', 'photo'], 'safe'],
 			[['order_id',], 'integer'],
         ];
     }
@@ -44,7 +44,7 @@ class Order extends ActiveRecord
 			'location' => Yii::t('app', 'Location'),
 			'price' => Yii::t('app', 'Price'),
 			'note' => Yii::t('app', 'Note'),
-			'komplen' => Yii::t('app', 'Complaind'),
+			'complaint' => Yii::t('app', 'Complaint'),
 			'photo' => Yii::t('app', 'Photo'),
 		];
 	}
@@ -97,7 +97,7 @@ class Order extends ActiveRecord
 			->andFilterWhere(['like', 'location', $this->location])
 			->andFilterWhere(['like', 'price', $this->price])
             ->andFilterWhere(['like', 'note', $this->note])
-			->andFilterWhere(['like', 'komplen', $this->komplen]);
+			->andFilterWhere(['like', 'complaint', $this->complaint]);
 
         return $dataProvider;
     }

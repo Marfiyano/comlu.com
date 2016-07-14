@@ -78,9 +78,11 @@ $this->params['breadcrumbs'];
 		<?= $form->field($model, 'note')->textArea([
 							'readonly' => (Yii::$app->user->identity->group_id == 5) ? true : false,
 							]) ?>
-		<?= $form->field($model, 'komplen')->textArea([
+		<?= //tidak muncul di action create
+			(Yii::$app->controller->action->id == 'update') ?
+			$form->field($model, 'complaint')->textArea([
 							'readonly' => (Yii::$app->user->identity->group_id == 5) ? true : false,
-							]) ?>						
+							]) : '' ?>						
 						
 		<?= //hanya direktur dan orang lapangan yang boleh upload foto
 			(Yii::$app->user->identity->group_id == 2 || Yii::$app->user->identity->group_id == 5) ? 

@@ -68,13 +68,6 @@ $this->params['breadcrumbs'][] = $this->title;
 				],
 			],
 			[
-				'attribute' => 'komplen',
-				'headerOptions' => ['class' => 'text-center'],
-				'contentOptions' => [
-					'class' => 'text-center col-lg-2 col-md-1 col-sm-1 col-xm-1',
-				],
-			],
-			[
 				'header' => 'Actions',
 				'headerOptions' => ['class' => 'text-center'],
 				'contentOptions' => [
