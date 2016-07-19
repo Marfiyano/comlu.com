@@ -175,7 +175,7 @@ $this->params['breadcrumbs'][] = $this->title;
 			},
 			plotOptions: {
 				series: {
-					enableMouseTracking: true
+					enableMouseTracking: false
 				}
 			},
 			series: [{

@@ -15,7 +15,7 @@ $this->params['breadcrumbs'][] = $this->title;
     
     <?= DetailView::widget([
         'model' => $model,
-		'template' => '<tr><th style="width:20%">{label}</th><td class="col-lg-6 col-xs-1">{value}</td></tr>',
+		'template' => '<tr><th style="width:20%">{label}</th><td>{value}</td></tr>',
         'attributes' => [
 			[
 				'label' => 'Company Name',
@@ -38,7 +38,7 @@ $this->params['breadcrumbs'][] = $this->title;
 				'visible' => (Yii::$app->user->identity->group_id != 5) ? true : false,
 			],
 			'note',
-			'complaint',
+			'komplen',
 			[
 				'label' => 'Photo',
 				'value' => (!empty($model->photo) ? '../uploads/'.$model->photo : 'no photo'),
