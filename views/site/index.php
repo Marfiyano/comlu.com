@@ -8,9 +8,6 @@ $this->title = 'PT. Kubik Kreasi Utama';
 <div class="site-index">
 
     <div class="jumbotron">
-      
-
-		<?= Html::img('images/cubical logo.jpg');?>
-
+		<?= Html::img('images/cubical logo.jpg',['width' => '300px', 'height' => '300px']);?>
     </div>
 </div>
