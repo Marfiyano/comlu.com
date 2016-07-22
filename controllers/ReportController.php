@@ -96,9 +96,11 @@ class ReportController extends Controller
 	
 		//check repeat order
 		foreach($company_name as $key=>$val) {
+			$order_id[] = Order::find()->select('order_id')->where(['company_name' => $val])->andWhere(['like', 'loading_date', $year_month.'%', false])->column();
 			$nama_company[] = "'".$val."'";
 			$loading_date[] = Order::find()->select('loading_date')->where(['company_name' => $val])->andWhere(['like', 'loading_date', $year_month.'%', false])->column();
 			$unload_date[] = Order::find()->select('unload_date')->where(['company_name' => $val])->andWhere(['like', 'loading_date', $year_month.'%', false])->column();
+			$complaint[] = Order::find()->select('complaint')->where(['company_name' => $val])->andWhere(['like', 'loading_date', $year_month.'%', false])->column();
 		}
 		
 		for($g=0;$g<count($company_name);$g++) {
@@ -113,12 +115,17 @@ class ReportController extends Controller
 				$x = 'x: Date.UTC(' .substr($loading_date[$g][$m],0,4). ',' .$x_month. ',' .substr($loading_date[$g][$m],8,2). ')';
 				$x2 = 'x2: Date.UTC(' .substr($unload_date[$g][$m],0,4). ',' .$x2_month. ',' .substr($unload_date[$g][$m],8,2). ')';
 				$y = 'y: '.$g;
-				
-				$data[$g][$m] = [$x, $x2, $y];
+				if($complaint[$g][$m] != NULL)
+					$color = 'color: "red"';
+				else
+					$color = 'color: "blue"';
+				$url = 'url: "' .Yii::$app->getUrlManager()->getBaseUrl(). '/jadwal/view?id=' .$order_id[$g][$m]. '"';
+				$data[$g][$m] = [$x, $x2, $y, $color, $url];
 			}
 		}
 		
 		return $this->render('index',[
+			'order_id' => $order_id,
 			'company_name' => $nama_company,
 			'model' => $model,
 			'month_list' => $month_list,

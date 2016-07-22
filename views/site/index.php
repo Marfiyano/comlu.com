@@ -7,6 +7,7 @@ $this->title = 'PT...';
 <div class="site-index">
 
     <div class="jumbotron">
+<<<<<<< HEAD
         <h1>Welcome Test!</h1>
 
         <p class="lead">You have successfully created your Yii-powered application.</p>
@@ -49,5 +50,8 @@ $this->title = 'PT...';
             </div>
         </div>
 
+=======
+		<?= Html::img('images/cubical logo.jpg',['width' => '300px', 'height' => '300px']);?>
+>>>>>>> origin/project_nico
     </div>
 </div>
