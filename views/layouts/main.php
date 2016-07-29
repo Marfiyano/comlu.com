@@ -46,7 +46,7 @@ AppAsset::register($this);
 	$module = $module_model->getModule();
 	
     NavBar::begin([
-        'brandLabel' => 'My Company',
+        'brandLabel' => 'PT. Kubik Kreasi Utama',
         'brandUrl' => Yii::$app->homeUrl,
         'options' => [
             'class' => 'navbar-inverse navbar-fixed-top',
@@ -84,9 +84,9 @@ AppAsset::register($this);
 
 <footer class="footer">
     <div class="container">
-        <p class="pull-left">&copy; Test <?= date('Y') ?></p>
+        <p class="pull-left">&copy; PT. Kubik Kreasi Utama <?= date('Y') ?></p>
 
-        <p class="pull-right"><?= Yii::powered() ?></p>
+        
     </div>
 </footer>
 

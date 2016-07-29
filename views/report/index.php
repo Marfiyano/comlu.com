@@ -173,24 +173,9 @@ $this->params['breadcrumbs'][] = $this->title;
 				categories: [<?php echo join($company_name,','); ?>],
 				reversed: true
 			},
-			/*plotOptions: {
+			plotOptions: {
 				series: {
-					enableMouseTracking: false
-<<<<<<< HEAD
-=======
-				}
-			},*/
-			 plotOptions: {
-				series: {
-					cursor: 'pointer',
-					point: {
-						events: {
-							click: function () {
-								location.href = this.options.url;
-							}
-						}
-					}
->>>>>>> origin/project_nico
+					enableMouseTracking: true
 				}
 			},
 			series: [{
