@@ -175,11 +175,21 @@ $this->params['breadcrumbs'][] = $this->title;
 			},
 			plotOptions: {
 				series: {
-					enableMouseTracking: true
+					cursor: 'pointer',
+					point: {
+						events: {
+							click: function () {
+								if(this.options.url != 'ayam') {
+									location.href = this.options.url;
+								}
+							}
+						}
+					}
 				}
 			},
 			series: [{
-				name: 'Tanggal Order',
+			showInLegend: false,    
+				name: 'Nama PT',
 				borderRadius: 5,
 				pointWidth: 10,
 				data: [

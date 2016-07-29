@@ -95,6 +95,7 @@ class ReportController extends Controller
 		$repeat_order_same_company = 0;
 	
 		//check repeat order
+		$order_id = array();
 		foreach($company_name as $key=>$val) {
 			$order_id[] = Order::find()->select('order_id')->where(['company_name' => $val])->andWhere(['like', 'loading_date', $year_month.'%', false])->column();
 			$nama_company[] = "'".$val."'";
@@ -115,11 +116,14 @@ class ReportController extends Controller
 				$x = 'x: Date.UTC(' .substr($loading_date[$g][$m],0,4). ',' .$x_month. ',' .substr($loading_date[$g][$m],8,2). ')';
 				$x2 = 'x2: Date.UTC(' .substr($unload_date[$g][$m],0,4). ',' .$x2_month. ',' .substr($unload_date[$g][$m],8,2). ')';
 				$y = 'y: '.$g;
-				if($complaint[$g][$m] != NULL)
+				if($complaint[$g][$m] != NULL) {
 					$color = 'color: "red"';
-				else
+					$url = 'url: "' .Yii::$app->getUrlManager()->getBaseUrl(). '/jadwal/view?id=' .$order_id[$g][$m]. '"';
+				}
+				else {
 					$color = 'color: "blue"';
-				$url = 'url: "' .Yii::$app->getUrlManager()->getBaseUrl(). '/jadwal/view?id=' .$order_id[$g][$m]. '"';
+					$url = 'url: "ayam"';
+				}
 				$data[$g][$m] = [$x, $x2, $y, $color, $url];
 			}
 		}
