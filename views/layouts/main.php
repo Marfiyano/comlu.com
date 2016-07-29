@@ -8,6 +8,7 @@ use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
 use yii\widgets\Breadcrumbs;
 use app\assets\AppAsset;
+use app\models\Module;
 
 AppAsset::register($this);
 ?>
@@ -20,39 +21,55 @@ AppAsset::register($this);
     <?= Html::csrfMetaTags() ?>
     <title><?= Html::encode($this->title) ?></title>
     <?php $this->head() ?>
+    <?php $this->registerJsFile(
+		    Yii::$app->request->baseUrl . '/js/helper.js',
+		    [
+			'position'=>yii\web\View::POS_HEAD,
+			'depends' => [\yii\web\JqueryAsset::className()]
+		    ]
+		); 
+		$this->registerJsFile(
+			Yii::$app->request->baseUrl . '/js/highcharts.js',
+		    [
+			'position'=>yii\web\View::POS_HEAD,
+			'depends' => [\yii\web\JqueryAsset::className()]
+		    ]
+		); 
+		?>
 </head>
 <body>
 <?php $this->beginBody() ?>
 
 <div class="wrap">
     <?php
+	$module_model = new Module();
+	$module = $module_model->getModule();
+	
     NavBar::begin([
-        'brandLabel' => 'My Company',
+        'brandLabel' => 'PT. Kubik Kreasi Utama',
         'brandUrl' => Yii::$app->homeUrl,
         'options' => [
             'class' => 'navbar-inverse navbar-fixed-top',
         ],
     ]);
+	
+	for($g=0;$g<count($module);$g++) {
+		if($module[$g]->module_name == 'Login' && !Yii::$app->user->isGuest) { //ubah menu Login menjadi Logout(namauser)
+			$items[] =('<li>'
+						.Html::beginForm(['/site/logout'], 'post', ['class' => 'navbar-form'])
+						.Html::submitButton(
+								'Logout (' .Yii::$app->user->identity->username. ')',
+								['class' => 'btn btn-link']
+							)
+						.Html::endForm()
+						.'</li>');
+		} else
+			$items[] =  ['label' => $module[$g]->module_name, 'url' => [$module[$g]->url]];
+	}
+	
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
-        'items' => [
-            ['label' => 'Home', 'url' => ['/site/index']],
-            ['label' => 'About', 'url' => ['/site/about']],
-            ['label' => 'Contact', 'url' => ['/site/contact']],
-			['label' => 'Jadwal', 'url' => ['/jadwal']],
-            Yii::$app->user->isGuest ? (
-                ['label' => 'Login', 'url' => ['/site/login']]
-            ) : (
-                '<li>'
-                . Html::beginForm(['/site/logout'], 'post', ['class' => 'navbar-form'])
-                . Html::submitButton(
-                    'Logout (' . Yii::$app->user->identity->username . ')',
-                    ['class' => 'btn btn-link']
-                )
-                . Html::endForm()
-                . '</li>'
-            )
-        ],
+        'items' => $items
     ]);
     NavBar::end();
     ?>
@@ -67,9 +84,9 @@ AppAsset::register($this);
 
 <footer class="footer">
     <div class="container">
-        <p class="pull-left">&copy; My Company <?= date('Y') ?></p>
+        <p class="pull-left">&copy; PT. Kubik Kreasi Utama <?= date('Y') ?></p>
 
-        <p class="pull-right"><?= Yii::powered() ?></p>
+        
     </div>
 </footer>
 

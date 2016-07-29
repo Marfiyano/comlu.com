@@ -4,6 +4,8 @@ namespace app\models;
 
 use Yii;
 use yii\db\ActiveRecord;
+use yii\base\Model;
+use yii\data\ActiveDataProvider;
 
 /**
  * Order is represent Order Table.
@@ -19,9 +21,9 @@ class Order extends ActiveRecord
     public function rules()
     {
         return [
-            // id_order is required
-            [['id_order'], 'required'],
-            // rememberMe must be a boolean value
+            //all field safe
+			[['order_id', 'company_name', 'loading_date', 'unload_date', 'location', 'price', 'tax', 'note', 'complaint', 'photo'], 'safe'],
+			[['order_id',], 'integer'],
         ];
     }
 
@@ -42,10 +44,64 @@ class Order extends ActiveRecord
 			'location' => Yii::t('app', 'Location'),
 			'price' => Yii::t('app', 'Price'),
 			'note' => Yii::t('app', 'Note'),
+			'complaint' => Yii::t('app', 'Complaint'),
 			'photo' => Yii::t('app', 'Photo'),
 		];
 	}
 
+	/**
+     * @inheritdoc
+     */
+    public function scenarios()
+    {
+        // bypass scenarios() implementation in the parent class
+        return Model::scenarios();
+    }
+	
+	/**
+     * Creates data provider instance with search query applied
+     *
+     * @param array $params
+     *
+     * @return ActiveDataProvider
+     */
+    public function search($params)
+    {
+        $query = Order::find()->where('status_order="1"');
+
+        // add conditions that should always apply here
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
+
+        $this->load($params);
+
+        if (!$this->validate()) {
+            // uncomment the following line if you do not want to return any records when validation fails
+            // $query->where('0=1');
+            return $dataProvider;
+        }
+
+        // grid filtering conditions
+        /*$query->andFilterWhere([
+            'id_order' => $this->id_order,
+            'loading_date' => $this->loading_date,
+            'unload_date' => $this->unload_date,
+            'price' => $this->price,
+        ]);*/
+
+        $query->andFilterWhere(['like', 'company_name', $this->company_name])
+			->andFilterWhere(['like', 'loading_date', $this->loading_date])
+			->andFilterWhere(['like', 'unload_date', $this->unload_date])
+			->andFilterWhere(['like', 'location', $this->location])
+			->andFilterWhere(['like', 'price', $this->price])
+            ->andFilterWhere(['like', 'note', $this->note])
+			->andFilterWhere(['like', 'complaint', $this->complaint]);
+
+        return $dataProvider;
+    }
+	
 	/**
      * Validates the password.
      * This method serves as the inline validation for password.
@@ -53,7 +109,7 @@ class Order extends ActiveRecord
      * @param string $attribute the attribute currently being validated
      * @param array $params the additional name-value pairs given in the rule
      */
-    public function validatePassword($attribute, $params)
+    /*public function validatePassword($attribute, $params)
     {
         if (!$this->hasErrors()) {
             $user = $this->getUser();
@@ -62,7 +118,7 @@ class Order extends ActiveRecord
                 $this->addError($attribute, 'Incorrect username or password.');
             }
         }
-    }
+    }*/
 
     /**
      * Finds user by [[username]]

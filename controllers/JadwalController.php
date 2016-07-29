@@ -4,9 +4,12 @@ namespace app\controllers;
 
 use Yii;
 use app\models\Order;
-use app\models\OrderSearch;
+use app\models\Group_Priv;
+use app\models\Module;
 use yii\web\Controller;
+use yii\filters\AccessControl;
 use yii\web\NotFoundHttpException;
+use yii\web\ForbiddenHttpException;
 use yii\filters\VerbFilter;
 
 /**
@@ -26,6 +29,21 @@ class JadwalController extends Controller
                     'delete' => ['POST'],
                 ],
             ],
+			'access' => [
+				'class' => AccessControl::className(),
+				//'only' => ['logout', 'signup'], //uncomment this line if you dont want all actions to take guest to login page
+				'rules' => [
+					[
+						'actions' => ['login', 'error'],
+						'allow' => true,
+					],
+					[
+						'actions' => ['logout', 'index', 'create', 'view', 'update', 'delete'], // add all actions to take guest to login page
+						'allow' => true,
+						'roles' => ['@'],
+					],
+				],
+			],
         ];
     }
 
@@ -35,15 +53,112 @@ class JadwalController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new OrderSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+		$allow_view = false;
+		$allow_update = false;
+		$allow_delete = false;
+		
+		if(!Yii::$app->user->isGuest) {
+			$gp_model = new Group_Priv();
+			$module_model = new Module();
+			
+			$module_id = $module_model->getModule(Yii::$app->controller->id)[0]->module_id;
+			$access_priv = $gp_model->getPriv(Yii::$app->user->identity->group_id, $module_id);
+			
+			if(count($access_priv)>0) {
+				for($g=0;$g<count($access_priv);$g++) {
+					if($access_priv[$g] == 'lihat')
+						$allow_view = true;
+					if($access_priv[$g] == 'update')
+						$allow_update = true;
+					if($access_priv[$g] == 'hapus')
+						$allow_delete = true;
+				}
+			}
+		}
+		
+		if($allow_view) { //check permission
+			$model = new Order();
+			$dataProvider = $model->search(Yii::$app->request->queryParams);
 
-        return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
+			return $this->render('index', [
+				'model' => $model,
+				'dataProvider' => $dataProvider,
+				'allow_view' => $allow_view,
+				'allow_update' => $allow_update,
+				'allow_delete' => $allow_delete,
+			]);
+		} else {
+			throw new ForbiddenHttpException('You are not authorized to access this page');
+		}
     }
-
+    
+    /**
+     * Creates a new Order model.
+     * If creation is successful, the browser will be redirected to the 'view' page.
+     * @return mixed
+     */
+    public function actionCreate()
+    {	
+		$allow_add = false;
+		if(!Yii::$app->user->isGuest) {
+			$gp_model = new Group_Priv();
+			$module_model = new Module();
+			
+			$module_id = $module_model->getModule(Yii::$app->controller->id)[0]->module_id;
+			$access_priv = $gp_model->getPriv(Yii::$app->user->identity->group_id, $module_id);
+			
+			if(count($access_priv)>0) {
+				for($g=0;$g<count($access_priv);$g++) {
+					if($access_priv[$g] == 'tambah')
+						$allow_add = true;
+				}
+			}
+		}
+			
+		if($allow_add) { //check permission
+			$model = new Order();
+		
+			if ($model->load(Yii::$app->request->post())) {
+				if (substr($_POST['Order']['price'],0,3) == 'Rp ')
+					$model->price = str_replace('.','',substr($_POST['Order']['price'],3));
+				else
+					$model->price = str_replace('.','',$_POST['Order']['price']);
+			
+				//date format php
+				$model->loading_date = date('Y-m-d',strtotime($_POST['Order']['loading_date']));
+				$model->unload_date = date('Y-m-d',strtotime($_POST['Order']['unload_date']));
+			
+				//get uploaded photo
+				$photo = \yii\web\UploadedFile::getInstance($model, 'photo');
+				
+				if (isset($photo) && $photo->size !== 0)
+					$model->photo = $model->company_name. ' -' .$photo->name;
+					
+				if ($model->save()) {
+					if (isset($photo) && $photo->size !== 0) //save photo
+						$photo->saveAs(\Yii::$app->basePath . '/uploads/' . $photo);
+					
+					//return $this->redirect(['view', 'id' => $model->id_order]);
+					return $this->redirect(['index']);
+				} else {
+					echo "<pre>";
+					echo "<br />";
+					echo "<br />";
+					echo "<br />";
+					echo "<br />";
+						print_r($model->getErrors());
+					echo "</pre>";
+				}
+			}
+			
+			return $this->render('create', [
+				'model' => $model,
+			]);
+		} else {
+			throw new ForbiddenHttpException('You are not authorized to access this page');
+		}
+	}
+	
     /**
      * Displays a single Order model.
      * @param integer $id
@@ -51,27 +166,46 @@ class JadwalController extends Controller
      */
     public function actionView($id)
     {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
-    }
-
-    /**
-     * Creates a new Order model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
-     */
-    public function actionCreate()
-    {
-        $model = new Order();
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id_order]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
-        }
+		$allow_view = false;
+		$allow_update = false;
+		$allow_delete = false;
+		
+		if(!Yii::$app->user->isGuest) {
+			$gp_model = new Group_Priv();
+			$module_model = new Module();
+			
+			$module_id = $module_model->getModule(Yii::$app->controller->id)[0]->module_id;
+			$access_priv = $gp_model->getPriv(Yii::$app->user->identity->group_id, $module_id);
+			
+			if(count($access_priv)>0) {
+				for($g=0;$g<count($access_priv);$g++) {
+					if($access_priv[$g] == 'lihat')
+						$allow_view = true;
+					if($access_priv[$g] == 'update')
+						$allow_update = true;
+					if($access_priv[$g] == 'hapus')
+						$allow_delete = true;
+				}
+			}
+		}
+		
+		if($allow_view) { //check permission
+			$model = $this->findModel($id);
+			
+			if(!empty($model->photo)) { 
+				$photo_name = explode("-",$model->photo);
+				$model->photo = $photo_name[1];
+			}
+			
+			return $this->render('view', [
+				'model' => $model,
+				'allow_view' => $allow_view,
+				'allow_update' => $allow_update,
+				'allow_delete' => $allow_delete,
+			]);
+		} else {
+			throw new ForbiddenHttpException('You are not authorized to access this page');
+		}
     }
 
     /**
@@ -82,15 +216,63 @@ class JadwalController extends Controller
      */
     public function actionUpdate($id)
     {
-        $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id_order]);
-        } else {
-            return $this->render('update', [
-                'model' => $model,
-            ]);
-        }
+		$allow_update = false;
+		if(!Yii::$app->user->isGuest) {
+			$gp_model = new Group_Priv();
+			$module_model = new Module();
+			
+			$module_id = $module_model->getModule(Yii::$app->controller->id)[0]->module_id;
+			$access_priv = $gp_model->getPriv(Yii::$app->user->identity->group_id, $module_id);
+			
+			if(count($access_priv)>0) {
+				for($g=0;$g<count($access_priv);$g++) {
+					if($access_priv[$g] == 'update')
+						$allow_update = true;
+				}
+			}
+		}
+		
+		if($allow_update) { //check permission
+			$model = $this->findModel($id);
+			
+			if ($model->load(Yii::$app->request->post())) {
+				if (substr($_POST['Order']['price'],0,3) == 'Rp ')
+					$model->price = str_replace('.','',substr($_POST['Order']['price'],3));
+				else
+					$model->price = str_replace('.','',$_POST['Order']['price']);
+				
+				//date format php
+				$model->loading_date = date('Y-m-d',strtotime($_POST['Order']['loading_date']));
+				$model->unload_date = date('Y-m-d',strtotime($_POST['Order']['unload_date']));
+				
+				//get uploaded photo
+				$photo = \yii\web\UploadedFile::getInstance($model, 'photo');
+					
+				if (isset($photo) && $photo->size !== 0)
+					$model->photo = $model->company_name. ' -' .$photo->name;
+						
+				if ($model->save()) {
+					if (isset($photo) && $photo->size !== 0) //save photo
+						$photo->saveAs(\Yii::$app->basePath . '/uploads/' . $photo);
+					
+					return $this->redirect(['view', 'id' => $model->order_id]);
+				} else {
+					echo "<pre>";
+					echo "<br />";
+					echo "<br />";
+					echo "<br />";
+					echo "<br />";
+						print_r($model->getErrors());
+					echo "</pre>";
+				}
+			}
+			
+			return $this->render('update', [
+				'model' => $model,
+			]);
+		} else {
+			throw new ForbiddenHttpException('You are not authorized to access this page');
+		}
     }
 
     /**
@@ -101,9 +283,31 @@ class JadwalController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+		$allow_delete = false;
+		if(!Yii::$app->user->isGuest) {
+			$gp_model = new Group_Priv();
+			$module_model = new Module();
+			
+			$module_id = $module_model->getModule(Yii::$app->controller->id)[0]->module_id;
+			$access_priv = $gp_model->getPriv(Yii::$app->user->identity->group_id, $module_id);
+			
+			if(count($access_priv)>0) {
+				for($g=0;$g<count($access_priv);$g++) {
+					if($access_priv[$g] == 'hapus')
+						$allow_delete = true;
+				}
+			}
+		}
+		
+		if($allow_delete) { //check permission
+			$model = $this->findModel($id);
+			$model->status_order='0';
+			$model->save();
 
-        return $this->redirect(['index']);
+			return $this->redirect(['index']);
+		} else {
+			throw new ForbiddenHttpException('You are not authorized to access this page');
+		}
     }
 
     /**

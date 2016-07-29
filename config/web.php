@@ -16,7 +16,7 @@ $config = [
         ],
         'user' => [
             'identityClass' => 'app\models\User',
-            'enableAutoLogin' => true,
+            'enableAutoLogin' => false,
         ],
         'errorHandler' => [
             'errorAction' => 'site/error',
@@ -28,6 +28,10 @@ $config = [
             // for the mailer to send real emails.
             'useFileTransport' => true,
         ],
+		'authManager' => [
+			'class'=>'yii\rbac\DbManager',
+			'defaultRoles'=>['guest'],
+		],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
             'targets' => [
@@ -58,10 +62,10 @@ $config = [
 
 if (YII_ENV_DEV) {
     // configuration adjustments for 'dev' environment
-    $config['bootstrap'][] = 'debug';
+    /*$config['bootstrap'][] = 'debug';
     $config['modules']['debug'] = [
         'class' => 'yii\debug\Module',
-    ];
+    ];*/
 
     $config['bootstrap'][] = 'gii';
     $config['modules']['gii'] = [

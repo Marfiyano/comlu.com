@@ -10,7 +10,7 @@ $this->title = 'Create Order';
 $this->params['breadcrumbs'][] = ['label' => 'Orders', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="order-create">
+<div class="order-create col-lg-10 col-lg-offset-2">
 
     <h1><?= Html::encode($this->title) ?></h1>
 

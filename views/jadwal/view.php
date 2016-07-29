@@ -6,37 +6,67 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\models\Order */
 
-$this->title = $model->id_order;
+$this->title = 'View Order';
 $this->params['breadcrumbs'][] = ['label' => 'Orders', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="order-view">
-
     <h1><?= Html::encode($this->title) ?></h1>
-
-    <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id_order], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->id_order], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
-    </p>
-
+    
     <?= DetailView::widget([
         'model' => $model,
+		'template' => '<tr><th style="width:20%">{label}</th><td class="col-lg-6 col-xs-1">{value}</td></tr>',
         'attributes' => [
-            'id_order',
-            'company_name',
-            'loading_date',
-            'unload_date',
-            'location',
-            'price',
-            'note',
-            'photo',
+			[
+				'label' => 'Company Name',
+				'value' => $model->company_name,
+			],
+			'loading_date',
+			'unload_date',
+			'location',
+			//orang lapangan tidak perlu lihat harga
+			[
+				'label' => 'Price',
+				'attribute' => 'price',
+				'format' => 'Currency',
+				'visible' => (Yii::$app->user->identity->group_id != 5) ? true : false,
+			],
+			//orang lapangan tidak perlu lihat tax
+			[
+				'label' => 'Tax',
+				'value' => ($model->tax == 0 ? 'No Tax' : ($model->tax == 1 ? 'PPN' :'PPN + PPH')),
+				'visible' => (Yii::$app->user->identity->group_id != 5) ? true : false,
+			],
+			'note',
+			'complaint',
+			[
+				'label' => 'Photo',
+				'value' => (!empty($model->photo) ? '../uploads/'.$model->photo : 'no photo'),
+				'format' => (!empty($model->photo) ? ['image',['width'=>'400','height'=>'400']] : ['text',['width'=>'auto','height'=>'auto']]),	
+			],
         ],
     ]) ?>
 
+    <p>
+        <?= ($allow_update) ? Html::a('Update', ['update', 'id' => $model->order_id], ['class' => 'btn btn-success']) : ''?>
+        <?= ($allow_delete) ? Html::a('Delete', ['delete', 'id' => $model->order_id], [
+																		'class' => 'btn btn-danger',
+																		'data' => [
+																			'confirm' => 'Are you sure you want to delete this item?',
+																			'method' => 'post',
+																		],
+																	]) : '' ?>
+	
+		<?= Html::a('Back' , ['/jadwal'], [
+											'class' => 'btn btn-primary',
+										  ]) ?>
+    </p>
 </div>
+
+<?php
+$this->registerJs(
+    '$("document").ready(function(){
+	    
+	});'
+);
+?>
